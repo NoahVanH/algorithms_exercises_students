@@ -42,8 +42,8 @@ public class RabinKarp {
     public RabinKarp(String[] pat) {
 
 
-         this.pat = pat; // save pattern (only needed for Las Vegas)
-         this.M = pat.length();
+         this.pat = String.valueOf(pat); // save pattern (only needed for Las Vegas)
+         this.M = pat.length;
         Q = 4463;
         RM = 1;
 

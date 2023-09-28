@@ -40,5 +40,5 @@ public class BinarySearchTreeIteratorTest {
             assertEquals(output[i], iter.next());
         }
         assertTrue(!iter.hasNext());
-    }
+    }}
 
