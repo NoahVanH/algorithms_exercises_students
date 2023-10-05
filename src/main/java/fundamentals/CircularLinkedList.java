@@ -38,31 +38,40 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
     }
 
     public CircularLinkedList() {
+
         // TODO initialize instance variables
+        //n = 0;
+        last = new Node();
+        last.next = last;
+        n = 1;
     }
 
     public boolean isEmpty() {
         // TODO
-         return false;
+         return n==1;
     }
 
     public int size() {
         // TODO
-         return -1;
+         return n-1;
     }
 
     private long nOp() {
         return nOp;
     }
 
-
-
     /**
      * Append an item at the end of the list
      * @param item the item to append
      */
     public void enqueue(Item item) {
-        // TODO
+        nOp++;
+        Node oldLast = last;
+        last = new Node();
+        last.item = item;
+        last.next = oldLast.next;
+        oldLast.next = last;
+        n++;
 
     }
 
@@ -73,8 +82,28 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
      */
     public Item remove(int index) {
         // BEGIN STUDENT return null;
-        return null;
+        nOp++;
+        if (index < 0 || index >= size()) {
+            throw new IndexOutOfBoundsException();
+        }
+
+            Node beforeNode = last.next;
+            // Trouver la node a l'index
+            for (int i = 0; i < index; i++) {
+                beforeNode = beforeNode.next;
+
+            }
+            Item myItem = beforeNode.next.item;
+
+            beforeNode.next = beforeNode.next.next;
+
+
+        n--;
+
+        return myItem;
     }
+
+
 
 
     /**
@@ -98,19 +127,35 @@ public class CircularLinkedList<Item> implements Iterable<Item> {
 
         // TODO You probably need a constructor here and some instance variables
 
+        private Node current;
+        private final long iteOp;
+        public ListIterator(){
+            iteOp = nOp();
+            current = last.next.next;
 
+
+        }
         @Override
         public boolean hasNext() {
-            // BEGIN STUDENT return false;
-            return false;
+            return current != last.next;
+
         }
 
         @Override
         public Item next() {
             // BEGIN STUDENT return null;
-            return null;
+            if(iteOp != nOp()){  // fail-fast
+                throw new ConcurrentModificationException();
+            }
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            Item item = current.item;
+            current = current.next;
+            return item;
         }
 
     }
+
 
 }
