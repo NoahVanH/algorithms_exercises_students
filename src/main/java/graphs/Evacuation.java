@@ -1,5 +1,9 @@
 package graphs;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * In case of an emergency at the Olympic games,
  * it’s crucial to ensure that all spectators can be evacuated efficiently.
@@ -32,8 +36,49 @@ public class Evacuation {
      * to reach the nearest exit from the i-th venue. If the i-th venue is an exit, the value is -1.
      */
     public static int[] findShortestPaths(int[][] graph, int[] exits) {
-         return null;
+        int n = graph.length;
+        int m = graph[0].length;
+
+        int[] edgeTo = new int[n];
+        int[] distTo = new int[n];
+        Arrays.fill(distTo,10000000);
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < exits.length; i++) {
+            queue.add(exits[i]);
+            edgeTo[exits[i]] = -1;
+            distTo[exits[i]] = 0;
+
+        }
+
+        while (!queue.isEmpty()){
+            int current_index = queue.poll();
+            System.out.println("current_index == " + current_index);
+            for (int voisin = 0; voisin < n; voisin++) {
+                if(graph[current_index][voisin] > 0){
+                    int cost = graph[current_index][voisin];
+                    if(distTo[voisin] > distTo[current_index] + cost){
+                        queue.add(voisin);
+                        edgeTo[voisin] = current_index;
+                        distTo[voisin] = distTo[current_index] + cost;
+
+                    }
+
+
+                }
+
+            }
+
+
+
+        }
+        //System.out.println(Arrays.toString(edgeTo));
+
+
+         return edgeTo;
     }
+
+
+
 
     public static void main(String[] args) {
 

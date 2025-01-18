@@ -43,6 +43,7 @@ public class MazeTest {
     public void testMaze1a() {
         Iterable<Integer> path = Maze.shortestPath(maze1, 0, 0, 6, 0);
         Integer[] pathArray = toArray(path);
+        System.out.println("patharray in test == " + Arrays.toString(pathArray));
         assertTrue(validPathSourceToDest(0, 0, 6, 0, maze1, path));
         assertEquals(15, pathArray.length);
     }

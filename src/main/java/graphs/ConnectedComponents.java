@@ -5,40 +5,50 @@ import java.util.List;
 
 /**
  * You are asked to implement the ConnectedComponent class given a graph.
- * The Graph class available in the code is the one of the Java class API.
- * <p>
- * public class ConnectedComponents {
- * <p>
- * public static int numberOfConnectedComponents(Graph g){
- * // TODO
- * return 0;
- * }
- * }
- * Hint: Feel free to add methods or even inner-class (private static class)
- *       to help you but don't change the class name or the signature of the numberOfConnectedComponents method.
- *
- *
  */
 public class ConnectedComponents {
-
 
     /**
      * @return the number of connected components in g
      */
     public static int numberOfConnectedComponents(Graph g) {
-        // TODO
-         return -1;
+        // Tableau pour marquer les sommets visités
+        boolean[] visited = new boolean[g.V()];
+        int count = 0;
+
+        // Parcourir tous les sommets
+        for (int v = 0; v < g.V(); v++) {
+            // Si le sommet n'a pas été visité, cela signifie qu'on a trouvé un nouveau composant
+            if (!visited[v]) {
+                // Démarrer une recherche DFS à partir de ce sommet
+                dfs(g, v, visited);
+                // Incrémenter le compteur de composants connexes
+                count++;
+            }
+        }
+        return count;
     }
 
-    static class Graph {
+    // Fonction DFS pour explorer les sommets connectés à partir du sommet 'v'
+    private static void dfs(Graph g, int v, boolean[] visited) {
+        // Marquer le sommet comme visité
+        visited[v] = true;
 
-        private List<Integer>[] edges;
+        // Parcourir tous les voisins du sommet 'v'
+        for (int w : g.adj(v)) {
+            // Si le voisin n'a pas encore été visité, effectuer une recherche DFS à partir de ce sommet
+            if (!visited[w]) {
+                dfs(g, w, visited);
+            }
+        }
+    }
 
-        public Graph(int nbNodes)
-        {
+    public static class Graph {
+        private List<Integer>[] edges; // Liste des arêtes du graphe
+
+        public Graph(int nbNodes) {
             this.edges = (ArrayList<Integer>[]) new ArrayList[nbNodes];
-            for (int i = 0;i < edges.length;i++)
-            {
+            for (int i = 0; i < edges.length; i++) {
                 edges[i] = new ArrayList<>();
             }
         }
@@ -58,8 +68,7 @@ public class ConnectedComponents {
             for (List<Integer> bag : edges) {
                 count += bag.size();
             }
-
-            return count/2;
+            return count / 2; // Parce que le graphe est non orienté
         }
 
         /**
@@ -78,4 +87,13 @@ public class ConnectedComponents {
         }
     }
 
+    public static void main(String[] args) {
+        // Exemple d'utilisation
+        Graph g = new Graph(5);
+        g.addEdge(0, 1);
+        g.addEdge(1, 2);
+        g.addEdge(3, 4);
+
+        System.out.println("Number of connected components: " + numberOfConnectedComponents(g));
+    }
 }

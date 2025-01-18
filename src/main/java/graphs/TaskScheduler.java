@@ -1,11 +1,8 @@
 package graphs;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-    /**
+/**
      * The class TaskScheduler allows
      * to declare a set of tasks with their dependencies.
      * You have to implement the method:
@@ -58,8 +55,51 @@ import java.util.Map;
          */
         public boolean isValid(List<String> schedule) {
             // TODO
-             return false;
+            /* Edge case :   +   */
+
+            int n = graph.size();
+            // incomplete list + missing node + duplicate
+            if(schedule.size() != n){
+                return false;
+            }
+
+
+            HashSet<String> map = new HashSet<>();
+            for (String s:schedule) {
+                if(map.contains(s)){
+                    return false;
+                }
+                List<String> pred = graph.get(s);
+                for (String spred:pred) {
+                    if(!map.contains(spred)){
+                        return false;
+                    }
+
+                }
+                map.add(s);
+
+            }
+            System.out.println(map);
+
+             return true;
         }
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

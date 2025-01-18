@@ -1,5 +1,8 @@
 package sorting;
 
+import java.util.NoSuchElementException;
+import java.util.PriorityQueue;
+
 /**
  * A max-heap is a hierarchical tree structure with the following invariants:
  *  - The tree is essentially complete, i.e., all levels of the tree are filled except possibly the right most child part of the last one,
@@ -55,6 +58,8 @@ public class TernaryHeap {
     // Array representing the heap. This is where all the values must be added
     // let this variable protected so that it can be accessed from the test suite
     protected int[] content;
+    int size;
+
 
 
 
@@ -63,7 +68,10 @@ public class TernaryHeap {
      * @param capacity : the initial capacity of the heap
      */
     public TernaryHeap(int capacity) {
-        // TODO
+        this.content = new int[capacity];
+        this.size = 0;
+
+
     }
 
     /**
@@ -71,7 +79,7 @@ public class TernaryHeap {
      */
     public int size() {
         // TODO
-         return -1;
+         return size;
     }
 
 
@@ -82,24 +90,77 @@ public class TernaryHeap {
      */
     public void insert(int x) {
         // TODO
-        
+
+        content[size] = x;
+        swim(size);
+        size++;
+
+
     }
+    private void sink(int k) {
+        while (true) {
+            int largest = k; // Assume current node is the largest
+            int firstChild = 3 * k + 1; // Index of the first child
+
+            for (int i = 0; i < 3; i++) { // Check up to three children
+                int child = firstChild + i;
+                if (child < size && content[child] > content[largest]) {
+                    largest = child;
+                }
+            }
+
+            if (largest == k) break; // Stop if invariant is satisfied
+            exch(k, largest); // Swap with the largest child
+            k = largest;      // Move down
+        }
+    }
+    public void swim(int k){
+        while (k > 0){
+            int parent = (k - 1) / 3;
+            if(content[k]<= content[parent]) break;
+
+            exch(k,parent);
+            k = parent;
+
+        }
+    }
+    public void exch(int i, int j){
+        int temp = content[i];
+        content[i] = content[j];
+        content[j] = temp;
+    }
+
 
     /**
      * Removes and returns the largest key on the heap. After this method is finished, the heap-invariant must be respected.
+     *
+     * swapping the root with last element of the last layer (at position size-1) in the content array
+     * re-heapify the structure by allowing the new root to sink using swap with the largest of its children
+     *
+     *  * until it is greater than all its children or reaches a leaf.
+     *
      * @return The largest key on the heap
      */
     public int delMax() {
-        // TODO
-         return Integer.MIN_VALUE;
+
+
+        int max = content[0];
+        exch(0,size-1);
+        size--;
+        sink(0);
+
+         return max;
     }
+
+
+
 
     /**
      * @return The largest key on the heap without removing it.
      */
     public int getMax() {
-        // TODO
-         return Integer.MIN_VALUE;
+
+         return content[0];
     }
 
 

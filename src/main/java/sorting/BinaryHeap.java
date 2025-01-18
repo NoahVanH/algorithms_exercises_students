@@ -1,5 +1,7 @@
 package sorting;
 
+import java.util.Arrays;
+
 /**
  * In this task, you must implement the `push` operation on a binary heap data structure.
  * As a reminder, a heap is a tree data structure such that the following invariant is respected
@@ -40,6 +42,32 @@ public class BinaryHeap {
      * @param value the added value
      */
     public void push(int value) {
+        if(size+1 >= content.length){
+            increaseSize();
+        }
+
+        content[size+1] = value;
+        swim(size);
+        size++;
+        //System.out.println(Arrays.toString(content));
+    }
+
+    public void exch(int i, int j){
+        int temp = content[i];
+        content[i] = content[j];
+        content[j] = temp;
+    }
+    public boolean less(int parent, int current){
+        return content[parent] > content[current];
+    }
+
+    public void swim(int k ){
+        k++;
+        while (k>1 && less(k/2,k)){
+            //System.out.println("LESS");
+            exch(k/2,k);
+            k=k/2;
+        }
     }
 
     /**

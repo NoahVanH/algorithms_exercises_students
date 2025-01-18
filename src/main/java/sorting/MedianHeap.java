@@ -1,6 +1,8 @@
 package sorting;
 
 
+import java.util.PriorityQueue;
+
 /**
  * Imagine a data structure that supports :
  * - insertion in logarithmic time
@@ -22,7 +24,17 @@ package sorting;
  */
 public class MedianHeap {
 
+    PriorityQueue<Integer> maxheap;
+    PriorityQueue<Integer> minheap;
+
     public MedianHeap(int initialSize) {
+        assert initialSize > 0;
+
+        // root is the largest of the smaller
+        this.maxheap = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+
+        // root is the smallest of the larger
+        this.minheap = new PriorityQueue<>();
         // TODO
     }
 
@@ -33,7 +45,23 @@ public class MedianHeap {
      * @param value the added value
      */
     public void insertion(int value) {
+        if(maxheap.isEmpty() || value <= maxheap.peek()){
+            maxheap.add(value);
+        } else {
+            minheap.add(value); // Add to min-heap
+        }
+        invariant();
         // TODO
+    }
+    public void invariant(){
+        if(maxheap.size()> minheap.size()+1){
+            int root_max = maxheap.poll();
+            minheap.add(root_max);
+        } else if (minheap.size()> maxheap.size()) {
+            int root_min = minheap.poll();
+            maxheap.add(root_min);
+
+        }
     }
 
 
@@ -44,7 +72,14 @@ public class MedianHeap {
      */
     public int findMedian() {
         // TODO
-         return -1;
+        if(maxheap.size()>minheap.size()){
+            return maxheap.peek();
+        }else{
+            return minheap.peek();
+
+        }
+
+
 
     }
 
@@ -54,7 +89,12 @@ public class MedianHeap {
      * @return the median value
      */
     public int deleteMedian() {
-        // TODO
-         return -1;
+        if(maxheap.size()>minheap.size()){
+            return maxheap.poll();
+        }else{
+            return minheap.poll();
+
+        }
+
     }
 }

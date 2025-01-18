@@ -3,6 +3,11 @@ package graphs;
 //feel free to import anything here
 
 
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
 /**
  * You just bought yourself the latest game from the Majong™
  * studio (recently acquired by Macrosoft™): MineClimb™.
@@ -31,6 +36,8 @@ package graphs;
  */
 public class MineClimbing {
 
+    static int[]distTo;
+
 
     /**
      * Returns the minimum distance between (startX, startY) and (endX, endY), knowing that
@@ -45,6 +52,99 @@ public class MineClimbing {
      */
     public static int best_distance(int[][] map, int startX, int startY, int endX, int endY) {
         // TODO
-         return 0;
+        int[][] pos = {{1,0},{0,1},{-1,0},{0,-1}};
+
+        int n = map.length;
+        int m = map[0].length;
+        if (n == 1 && m == 1) return 0;
+
+        int index_start = index(startX,startY,m);
+        int index_end = index(endX,endY,m);
+
+
+        distTo = new int[n*m];
+        PriorityQueue<Point> pq = new PriorityQueue<>(); // on stock quoi ? Integer ou strucure.dist et structure.index
+
+        //edge case, start = end
+        if(index_start == index_end){
+            return min_dist(startX,startY,endX,endY,map);
+        }
+        Arrays.fill(distTo,1000000);
+        distTo[index_start] = 0;
+        pq.add(new Point(index_start,0));
+
+
+        while (!pq.isEmpty() ){
+            Point currentPoint = pq.poll();
+            int currentDistance = currentPoint.distance;
+            int currentIndex = currentPoint.index;
+            int currentX = Row(currentIndex,m);
+            int currentY = Col(currentIndex,m);
+            if(currentDistance > distTo[currentIndex]) continue;
+            //System.out.println(currentX +" " + currentY);
+            for (int v = 0; v < 4; v++) {
+
+                int neix = (currentX + pos[v][0] + n)% n;
+                int neiy = (currentY + pos[v][1] + m)%m;
+                int neiindex = index(neix,neiy,m);
+
+
+                //System.out.println("(" + neix +" , "+ neiy+")");
+                int weight = min_dist(currentX,currentY,neix,neiy,map);
+                if(distTo[neiindex] > distTo[currentIndex] + weight){
+                    distTo[neiindex] = distTo[currentIndex] + weight;
+                    pq.add(new Point(neiindex,distTo[neiindex]));
+
+                }
+
+
+            }
+
+
+        }
+        //System.out.println(Arrays.toString(distTo));
+
+        if(distTo[index_end] == 1000000){
+            System.out.println("end not reached");
+            return -1;
+        }
+
+
+         return distTo[index_end];
+    }
+
+    public static int index(int x, int y,int m){
+        return x*m+y;
+
+    }
+    public static int Col(int index, int nbCol){
+        return index % nbCol;
+    }
+    public static int Row(int index, int nbCol){
+        return index / nbCol;
+    }
+    public static int min_dist(int a, int b, int c, int d,int[][] map){
+        return Math.abs(map[a][b] - map[c][d]);
+    }
+    public static class Point implements Comparable<Point> {
+        int index;
+        int distance;
+        Point(int index, int distance){
+            this.index = index;
+            this.distance = distance;
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof Point) {
+                Point p = (Point) o;
+                return p.index == this.index && p.distance == this.distance;
+            }
+            return false;
+        }
+
+        @Override
+        public int compareTo(Point o) {
+            return Integer.compare(this.distance,o.distance);
+        }
     }
 }

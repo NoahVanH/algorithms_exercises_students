@@ -1,6 +1,11 @@
 package graphs;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
  * We are interested in solving a maze represented
  * by a matrix of integers 0-1 of size nxm.
@@ -26,7 +31,65 @@ package graphs;
 public class Maze {
     public static Iterable<Integer> shortestPath(int[][] maze, int x1, int y1, int x2, int y2) {
         // TODO
-         return null;
+        int start_value = maze[x1][y1];
+        int end_value = maze[x2][y2];
+        if(start_value == 1 || end_value == 1) return new LinkedList<>();
+
+
+        int n = maze.length;
+        int m = maze[0].length;
+        boolean[] marked = new boolean[n*m];
+        int[] edgeTo = new int[n*m];
+
+        Queue<Integer> queue = new LinkedList<>();
+
+        int[][] pos = {{1,0},{0,1},{-1,0},{0,-1}};
+
+        int start = ind(x1,y1,m);//m ou n
+        int dest = ind(x2,y2,m);
+        System.out.println(start);
+        queue.add(start);
+        marked[start] = true;
+
+        boolean found = false;
+        while(!queue.isEmpty() && !found){
+            int current = queue.remove(); // 1D
+            int current_x = row(current,m); // 2D
+            int current_y = col(current,m); // 2D
+            for (int i = 0; i < 4; i++) {
+                int voisin_x = current_x + pos[i][0];
+                int voisin_y = current_y + pos[i][1];
+
+                if (voisin_x < n && voisin_x >= 0 && voisin_y < m && voisin_y >= 0) {
+
+                    int voisin1D = ind(voisin_x,voisin_y,m);
+
+                    if (maze[voisin_x][voisin_y] != 1 && !marked[voisin1D]) {
+
+                        marked[voisin1D] = true;
+                        queue.add(voisin1D);
+                        edgeTo[voisin1D] = current;
+                        if (voisin_x == x2 && voisin_y == y2) {
+                            found = true;
+                        }
+                    }
+
+                }
+
+
+
+            }
+
+        }
+
+        LinkedList<Integer> result = new LinkedList<>();
+        if(!marked[dest]) return result;
+        for (int current = dest; current != start; current = edgeTo[current]) {
+            result.addFirst(current);
+        }
+        result.addFirst(start);
+
+        return result;
     }
 
     public static int ind(int x, int y, int lg) {

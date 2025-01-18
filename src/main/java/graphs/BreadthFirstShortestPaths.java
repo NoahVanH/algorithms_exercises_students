@@ -1,7 +1,6 @@
 package graphs;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Consider this class, BreadthFirstShortestPaths, which computes the shortest path between
@@ -31,6 +30,7 @@ public class BreadthFirstShortestPaths {
 
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked; // marked[v] = is there an s-v path
+    private int[] edgeTo;
     private int[] distTo;     // distTo[v] = number of edges shortest s-v path
 
     /**
@@ -43,6 +43,7 @@ public class BreadthFirstShortestPaths {
     public BreadthFirstShortestPaths(Graph G, Iterable<Integer> sources) {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
+        edgeTo = new int[G.V()];
         for (int v = 0; v < G.V(); v++) {
             distTo[v] = INFINITY;
         }
@@ -52,6 +53,28 @@ public class BreadthFirstShortestPaths {
     // Breadth-first search from multiple sources
     private void bfs(Graph G, Iterable<Integer> sources) {
         // TODO
+        Queue<Integer> queue = new LinkedList<>();
+        for (Integer s: sources) {
+            marked[s] = true;
+            distTo[s] = 0;
+            queue.add(s);
+        }
+
+        while (!queue.isEmpty()){
+            int v = queue.poll();
+            for (int w: G.adj(v)) {
+                if(!marked[w]){
+                    marked[w] = true;
+                    queue.add(w);
+                    edgeTo[w] = v;
+
+                    distTo[w] = distTo[v] + 1;
+                }
+
+            }
+
+        }
+
     }
 
     /**
@@ -62,7 +85,7 @@ public class BreadthFirstShortestPaths {
      */
     public boolean hasPathTo(int v) {
         // TODO
-         return false;
+         return marked[v];
     }
 
     /**
@@ -74,7 +97,7 @@ public class BreadthFirstShortestPaths {
      */
     public int distTo(int v) {
         // TODO
-         return -1;
+         return distTo[v];
     }
 
     static class Graph {

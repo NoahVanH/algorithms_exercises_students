@@ -24,6 +24,7 @@ import java.util.*;
  * how long would it take at least knowing that each by-pass takes 1 year to be crossed ?
  */
 public class GalaxyPath {
+    public static int n;
     /**
      * Hint: Read the first small unit test with 5 galaxies for
      *       a small example and its expected solution.
@@ -50,7 +51,39 @@ public class GalaxyPath {
      */
     public static int findPath(int [][] graph, int source, Set<Integer> destinations) {
         // TODO Your algorithm should execute in O(n^2) where n is the number of galaxies (nodes)
-         return -2;
+
+        n = graph.length;
+        boolean[] visited = new boolean[n];
+        int[] dist = new int[n];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(source);
+        visited[source] = true;
+
+
+        while (!queue.isEmpty()){
+            int current = queue.poll();
+            if(destinations.contains(current)){
+                return dist[current];
+            }
+            for (int i = 0; i < n; i++) {
+                if(!visited[i] && dist[current] < graph[current][i]){
+                    visited[i] = true;
+                    queue.add(i);
+                    dist[i] = dist[current]+1;
+                }
+
+            }
+
+
+        }
+
+
+
+
+         return -1;
+    }
+    public static int index(int x,int y){
+        return x*n/y;
     }
 }
 
