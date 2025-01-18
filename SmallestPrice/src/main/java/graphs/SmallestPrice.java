@@ -48,14 +48,54 @@ public class SmallestPrice {
      */
     public static int getSmallestPrice(WeightedGraph graph, int source, int maxTime, List<Pair> destinations) {
         // TODO
-         return -1;
+        // dijkstra
+        // adj[v] = adjacency list for node v
+
+        int[] distTo = new int[graph.V()];
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>();
+
+        Arrays.fill(distTo,9999999);
+        pq.add(new Pair(source,0));
+        distTo[source] = 0;
+
+        while (!pq.isEmpty()){
+            Pair current = pq.poll();
+            int v = current.node;
+
+            for (DirectedEdge e:graph.adj[v]) {
+                int w = e.to();
+                if(distTo[w] > distTo[v] + e.weight && distTo[v] + e.weight <= maxTime){
+                    distTo[w] = distTo[v] + e.weight;
+                    pq.add(new Pair(w,distTo[v] + e.weight));
+
+                }
+
+            }
+        }
+        //System.out.println(Arrays.toString(distTo));
+        int min = 9999;
+        for (Pair p:destinations) {
+            if(distTo[p.node] <= maxTime){
+                min = Math.min(p.price,min);
+            }
+
+        }
+        if(min == 9999){
+            return -1;
+        }
+
+
+
+
+         return min;
 
     }
 
 
 
 
-    static class Pair {
+    static class Pair implements Comparable<Pair> {
         private final int node;
         private final int price;
 
@@ -72,6 +112,10 @@ public class SmallestPrice {
             return price;
         }
 
+        @Override
+        public int compareTo(Pair o) {
+            return Integer.compare(this.price,o.price);
+        }
     }
 
 

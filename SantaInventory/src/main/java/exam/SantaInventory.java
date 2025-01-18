@@ -1,6 +1,10 @@
 package exam;
 
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+
 /**
  * Santa needs to calculate the median price of gifts he will deliver this year.
  * The gift prices are stored in a unique data structure known as the 'magical Christmas search tree'.
@@ -35,13 +39,20 @@ package exam;
  */
 
 public class SantaInventory {
-
+    public LinkedList<Integer> list = new LinkedList<>();
     private Node root; // root of BST
 
     private class Node {
         private int toyPrice; // Price of the toy
         private int count; // Number of time a toy with price `toyPrice` has been added in the tree
         private Node left, right; // left and right subtrees
+
+        private int size; // total number of gifts in the subtree.
+
+
+    }
+    public void put(int toyPrice, int count) {
+        root = put(root,toyPrice,count);
     }
 
     /**
@@ -56,8 +67,40 @@ public class SantaInventory {
      * @param count    The number of toys added to the magical tree. If the toy price already exists,
      *                 this count is added to the existing count.
      */
-    public void put(int toyPrice, int count) {
+    public Node put(Node root, int toyPrice, int count) {
+
+
+        if(root == null){
+            Node newnode = new Node();
+            newnode.toyPrice = toyPrice;
+            newnode.count = count;
+            newnode.size = count;
+
+            list.add(toyPrice);
+            return newnode;
+        }
+
+        if(toyPrice < root.toyPrice){
+            // a gauche
+            root.left = put(root.left,toyPrice,count);
+        } else if (toyPrice > root.toyPrice) {
+            root.right = put(root.right,toyPrice,count);
+            
+        }else{
+            root.count += count;
+        }
+        root.size = getSize(root.left) + getSize(root.right) + root.count;
+        return root;
+
+
+
+
     }
+    private int getSize(Node node) {
+        return node == null ? 0 : node.size;
+    }
+
+
 
     /**
      * Calculates the median price of the toys in the magical Christmas search tree.
@@ -71,7 +114,25 @@ public class SantaInventory {
      * @throws IllegalArgumentException if the tree is empty.
      */
     public int median() {
-		 return -1;
+        if(root == null || root.size == 0){
+            throw new IllegalArgumentException();
+        }
+        int target = (root.size + 1) / 2;
+        return findMedian(root,target);
+
+
+    }
+    public int findMedian(Node node, int target){
+        int leftsize = getSize(node.left);
+        if(target<= leftsize){
+            return findMedian(node.left,target);
+        }
+        int currentrange = leftsize + node.count;
+        if(target<= currentrange){
+            return node.toyPrice;
+        }
+        return findMedian(node.right,target-currentrange);
+
     }
 
 }
