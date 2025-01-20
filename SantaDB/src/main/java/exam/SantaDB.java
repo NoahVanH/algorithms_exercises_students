@@ -2,9 +2,7 @@ package exam;
 
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Santa Claus is getting ready for his annual gift distribution.
@@ -58,7 +56,53 @@ public class SantaDB {
      */
     public static List<GiftAssignment> innerJoin(Child[] children, Gift[] gifts) {
         // TODO
-         return null;
+        //child: id name
+        //gifts: giftId childId details
+        //Gistassigement: childId childName giftId giftdetaims
+
+        List<GiftAssignment> list = new ArrayList<>();
+        Arrays.sort(gifts, Comparator.comparingInt(g->g.childId));
+        for (Child c:children) {
+            int start = findGift(gifts,c.id);
+            if(start == -1){
+                continue;
+
+            }
+            for (int i = start; i < gifts.length ; i++) {
+                if(gifts[i].childId == c.id){
+                    list.add(new GiftAssignment(c.id,c.name,gifts[i].giftId,gifts[i].details));
+                }
+
+            }
+
+        }
+
+
+
+        //System.out.println(list);
+         return list;
+    }
+    public static int findGift(Gift[] gifts, int childid){
+        //Return index
+        //gifts is sorted by childid
+        int low = 0;
+        int high = gifts.length-1;
+        while (low <= high){
+            int mid = low + (high-low)/2;
+            if(gifts[mid].childId < childid){
+                low = mid +1;
+
+            } else if (gifts[mid].childId > childid) {
+                high = mid-1;
+
+            }else{
+                while(mid>0 &&  gifts[mid-1].childId==childid){
+                    mid--;
+                }
+                return mid;
+            }
+        }
+        return -1;
     }
 
 }

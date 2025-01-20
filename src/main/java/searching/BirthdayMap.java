@@ -1,9 +1,7 @@
 package searching;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.time.Year;
+import java.util.*;
 
 
 /**
@@ -25,8 +23,16 @@ import java.util.TreeMap;
  */
 class BirthdayMap {
     // Hint: feel free to use existing java classes from Java such as java.util.TreeMap
+    //multiple people born on the same day.
+    //query specic date, year
+    //key = year
+    HashMap<String,List<Person>> yearmap;
+    //key = date
+    HashMap<String,List<Person>> datemap;
 
     BirthdayMap() {
+        yearmap = new HashMap<>();
+        datemap = new HashMap<>();
         // TODO
     }
 
@@ -39,6 +45,24 @@ class BirthdayMap {
      */
     void addPerson(Person person) {
         // TODO
+        String year = person.birthday.split("-")[0];
+        System.out.println(year);
+
+        // 1
+
+//        List<Person> listdate = datemap.getOrDefault(person.birthday,new ArrayList<>());
+//        listdate.add(person);
+//        datemap.put(person.birthday,listdate);
+//
+//        List<Person> yeardate = yearmap.getOrDefault(year,new ArrayList<>());
+//        yeardate.add(person);
+//        yearmap.put(year,yeardate);
+
+        // 2
+        yearmap.computeIfAbsent(year,k->new ArrayList<>()).add(person);
+        datemap.computeIfAbsent(person.birthday, k -> new ArrayList<>()).add(person);
+
+
     }
 
     /**
@@ -50,7 +74,7 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornOnDate(String date) {
         // TODO
-         return null;
+         return datemap.getOrDefault(date,new ArrayList<>());
     }
 
 
@@ -64,7 +88,7 @@ class BirthdayMap {
      */
     List<Person> getPeopleBornInYear(String year) {
         // TODO
-         return null;
+        return yearmap.getOrDefault(year,new ArrayList<>());
     }
 
 

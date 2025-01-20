@@ -1,10 +1,6 @@
 package exam;
 
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.PriorityQueue;
-
 /**
  * Santa needs to calculate the median price of gifts he will deliver this year.
  * The gift prices are stored in a unique data structure known as the 'magical Christmas search tree'.
@@ -39,20 +35,43 @@ import java.util.PriorityQueue;
  */
 
 public class SantaInventory {
-    public LinkedList<Integer> list = new LinkedList<>();
+
     private Node root; // root of BST
 
     private class Node {
         private int toyPrice; // Price of the toy
         private int count; // Number of time a toy with price `toyPrice` has been added in the tree
         private Node left, right; // left and right subtrees
+        private int subtreeSize; // Number of toys in the subtree
 
-        private int size; // total number of gifts in the subtree.
-
-
+        Node(int toyPrice, int count) {
+            this.toyPrice = toyPrice;
+            this.count = count;
+            this.subtreeSize = count;
+        }
     }
-    public void put(int toyPrice, int count) {
-        root = put(root,toyPrice,count);
+
+    // Function to print the tree
+    public void printTree(Node root, int level) {
+        if (root == null) {
+            return;
+        }
+
+        // Print the right subtree first (to display higher levels first)
+        printTree(root.right, level + 1);
+
+        // Print current node value with indentation
+        for (int i = 0; i < level; i++) {
+            System.out.print("    ");
+        }
+        System.out.print(root.toyPrice);
+        System.out.print(";");
+        System.out.print(root.count);
+        System.out.print(";");
+        System.out.println(root.subtreeSize);
+
+        // Print the left subtree
+        printTree(root.left, level + 1);
     }
 
     /**
@@ -67,39 +86,47 @@ public class SantaInventory {
      * @param count    The number of toys added to the magical tree. If the toy price already exists,
      *                 this count is added to the existing count.
      */
-    public Node put(Node root, int toyPrice, int count) {
-
-
-        if(root == null){
-            Node newnode = new Node();
-            newnode.toyPrice = toyPrice;
-            newnode.count = count;
-            newnode.size = count;
-
-            return newnode;
+    public void put(int toyPrice, int count) {
+        Node current = root;
+        if(current == null) {
+            root = new Node(toyPrice, count);
+            return;
         }
-
-        if(toyPrice < root.toyPrice){
-            // a gauche
-            root.left = put(root.left,toyPrice,count);
-        } else if (toyPrice > root.toyPrice) {
-            root.right = put(root.right,toyPrice,count);
-            
-        }else{
-            root.count += count;
+        while(true) {
+            if(current.toyPrice == toyPrice) {
+                current.count += count;
+                break;
+            } else if(current.toyPrice > toyPrice) {
+                if(current.left == null) {
+                    current.left = new Node(toyPrice, count);
+                    break;
+                } else {
+                    current = current.left;
+                }
+            } else {
+                if(current.right == null) {
+                    current.right = new Node(toyPrice, count);
+                    break;
+                } else {
+                    current = current.right;
+                }
+            }
         }
-        root.size = getSize(root.left) + getSize(root.right) + root.count;
-        return root;
-
-
-
-
-    }
-    private int getSize(Node node) {
-        return node == null ? 0 : node.size;
+        updateSize(root);
     }
 
+    public int updateSize(Node node) {
+        if (node == null) {
+            return 0;
+        }
 
+        int leftSize = updateSize(node.left);
+        int rightSize = updateSize(node.right);
+
+        node.subtreeSize = node.count + leftSize + rightSize;
+
+        return node.subtreeSize;
+    }
 
     /**
      * Calculates the median price of the toys in the magical Christmas search tree.
@@ -113,42 +140,39 @@ public class SantaInventory {
      * @throws IllegalArgumentException if the tree is empty.
      */
     public int median() {
-        if(root == null || root.size == 0){
+        if(root == null) {
             throw new IllegalArgumentException();
         }
-        int target = (root.size + 1) / 2;
-        return findMedian(root,target);
-
-
+        printTree(root, 0);
+        int countMedian = (int)Math.ceil(root.subtreeSize/2.0);
+        return median(root, countMedian);
     }
-    /**
-     * Finds the median price in the tree.
-     *
-     * @param node   The current node being inspected.
-     * @param target The position of the median in the sorted list of prices (1-based index).
-     * @return The toy price corresponding to the median.
-     */
-    public int findMedian(Node node, int target) {
-        // Calculate the total size of the left subtree
-        int leftSize = getSize(node.left);
 
-        // If the target index falls entirely within the left subtree
-        if (target <= leftSize) {
-            return findMedian(node.left, target);
+    private int median(Node node, int countMedian){
+        if(node.left == null) {
+            // either itself or to the right
+            if(node.count >= countMedian) {
+                return node.toyPrice;
+            } else {
+                return median(node.right, countMedian - node.count);
+            }
         }
-
-        // Calculate the range of indices that include the current node's values
-        int currentRange = leftSize + node.count;
-
-        // If the target index falls within the range of the current node's values
-        if (target <= currentRange) {
+        if(node.left.subtreeSize > countMedian){
+            // to the left
+            return median(node.left, countMedian);
+        } else if (countMedian - node.left.subtreeSize <= node.count) {
             return node.toyPrice;
-        }
-
-        // If the target index is beyond the current node's range, adjust the index
-        // and continue searching in the right subtree
-        return findMedian(node.right, target - currentRange);
+        } else return median(node.right, countMedian - node.count);
     }
 
-
+    public static void main(String[] args) {
+        SantaInventory inventory = new SantaInventory();
+        inventory.put(20, 4);
+        inventory.put(1, 10);
+        inventory.put(35, 2);
+        inventory.put(40, 1);
+        inventory.put(5, 8);
+        inventory.median();
+    }
 }
+

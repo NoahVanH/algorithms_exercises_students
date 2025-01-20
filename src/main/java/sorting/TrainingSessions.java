@@ -1,5 +1,8 @@
 package sorting;
 
+import java.util.HashMap;
+import java.util.TreeMap;
+
 /**
  * The Olympic Games organizers need to allocate facilities for the athletes' training sessions.
  * Each team has a schedule of training sessions with a start and end time
@@ -46,7 +49,21 @@ public class TrainingSessions {
      */
     public int minFacilitiesRequired(int[][] sessions) {
         // TODO
-         return -1;
+        HashMap<Integer,Integer> timeline = new HashMap<>();
+
+        for (int[] session:sessions) {
+            timeline.put(session[0],timeline.getOrDefault(session[0],0)+1);
+            timeline.put(session[1],timeline.getOrDefault(session[1],0)-1);
+        }
+        System.out.println(timeline);
+        int max = 0;
+        int current = 0;
+        for (int count:timeline.values()) {
+            current+=count;
+            max=Math.max(max,current);
+
+        }
+         return max;
     }
 
 

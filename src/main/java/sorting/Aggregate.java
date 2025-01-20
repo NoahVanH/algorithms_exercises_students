@@ -1,8 +1,6 @@
 package sorting;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Your task involves creating an `aggregate` function.
@@ -62,8 +60,8 @@ public class Aggregate {
      *
      * Example:
      * Consider a 2D array:
-     * {
-     *     {1, 5, 3},
+     * {    column
+     * line{1, 5, 3},
      *     {4, 5, 2},
      *     {6, 2, 8}
      *     {9, 2, 2}
@@ -75,7 +73,32 @@ public class Aggregate {
      * There is a tie between 2 and 5, but 2 is smaller.
      */
     public static int mode(int[][] array, int from, int to, int column) {
-         return -1;
+        //Key = number, Values = occurences
+        TreeMap<Integer,Integer> map = new TreeMap<>();
+        int c = column;
+        //[ligne][column]
+        for (int i = from; i < to+1; i++) {
+            map.put(array[i][c],map.getOrDefault(array[i][c],0)+1);
+            //System.out.println(array[i][c]);
+
+        }
+        System.out.println(map);
+        int maxOcc = 0;
+        int mode = 0;
+        for (Integer key:map.keySet()) {
+            int value = map.get(key);
+            if(value > maxOcc){
+                maxOcc = value;
+                mode = key;
+            }
+            if(value == maxOcc && key < mode){
+                mode= key;
+            }
+
+        }
+
+        return mode;
+
     }
 
     /**
@@ -93,7 +116,27 @@ public class Aggregate {
      * Example: See above and see unit tests.
      */
     public static int[][] aggregate(int[][] input, int column) {
-         return null;
+        TreeMap<Integer, List<int[]>> groups = new TreeMap<>();
+
+        for (int[] row : input) {
+            int key = row[column];
+            groups.computeIfAbsent(key, k -> new ArrayList<>()).add(row);
+        }
+
+        List<int[]> aggregatedResult = new ArrayList<>();
+
+        for (Map.Entry<Integer, List<int[]>> entry : groups.entrySet()) {
+            List<int[]> group = entry.getValue();
+            int[][] groupArray = group.toArray(new int[0][]);
+
+            int[] aggregatedRow = new int[groupArray[0].length];
+            for (int i = 0; i < groupArray[0].length; i++) {
+                aggregatedRow[i] = mode(groupArray, 0, groupArray.length - 1, i);
+            }
+
+            aggregatedResult.add(aggregatedRow);
+        }
+
+        return aggregatedResult.toArray(new int[0][]);
     }
 }
-

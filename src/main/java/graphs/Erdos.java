@@ -1,58 +1,80 @@
 package graphs;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
-/**
- * The erdos number is a "collaborative distance" metric to Paul Erdos (a prolific mathematician)
- * based on co-authorship of mathematical articles.
- * It is computed as follows:
- * - Erdos has, by definition an erdos-number of 0.
- * - For each other author, we look at all his/her co-authors in each article.
- *   If n is the minimum erdos-number from all his co-authors, then this author has an erdos-number of n+1.
- *
- * For example:
- *
- * Given this set of co-authors relations:
- *
- * 		{ "Paul Erdös", "Edsger W. Dijkstra" }
- * 		{ "Edsger W. Dijkstra", "Alan M. Turing" }
- * 		{ "Edsger W. Dijkstra", "Donald Knuth" }
- * 		{ "Donald Knuth", "Stephen Cook", "Judea Pearl" }
- *
- * 	The erdos number of Paul Erdos is 0, of Edsger W. Dijkstra is 1, of Alan M. Turing is 2, of Donald Knuth is 2, of Stephen Cook is 3.
- *
- * 	Debug your code on the small examples in the test suite.
- */
 public class Erdos {
 
 	public static final String erdos = "Paul Erdös";
-
-
+	private final HashMap<String, Integer> map; // Key: Author, Value: Erdős number
 
 	/**
 	 * Constructs an Erdos object and computes the Erdős numbers for each author.
 	 *
-	 * The constructor should run in O(n*m^2) where n is the number of co-author relations,
-	 * and m the maximum number of co-authors in one article.
-	 *
 	 * @param articlesAuthors An ArrayList of String arrays, where each array represents the list of authors of a single article.
 	 */
-	public Erdos(ArrayList<String []> articlesAuthors) {
-		// TODO
+	public Erdos(ArrayList<String[]> articlesAuthors) {
+		this.map = new HashMap<>(); // Initialize the map to store Erdős numbers
+
+		// Step 1: Build the graph of co-author relationships
+		HashMap<String, List<String>> graph = new HashMap<>();
+		for (String[] relations:articlesAuthors) {
+			for (String author:relations) {
+				graph.putIfAbsent(author,new ArrayList<>());
+				for (String coAuthor:relations) {
+					if(!author.equals(coAuthor)){
+						graph.get(author).add(coAuthor);
+					}
+
+				}
+
+
+			}
+			
+		}
+
+		// Step 2: Perform BFS starting from "Paul Erdös"
+		Queue<Node> queue = new LinkedList<>();
+		queue.add(new Node(erdos,0));
+		map.put(erdos,0);
+
+		while (!queue.isEmpty()){
+			Node current = queue.poll();
+			String author = current.name;
+			int distance = current.distance;
+			for (String coAuthor:graph.getOrDefault(author,new ArrayList<>())) {
+				if(!map.containsKey(coAuthor)){
+					map.put(coAuthor,distance+1);
+					queue.add(new Node(coAuthor,distance+1));
+				}
+
+			}
+		}
+
+
+
 	}
 
 	/**
 	 * Returns the Erdős number of a given author.
 	 * This method is expected to run in O(1).
+	 *
 	 * @param author The name of the author whose Erdős number is to be found.
 	 * @return The Erdős number of the specified author. If the author is not in the network, returns -1.
 	 */
 	public int findErdosNumber(String author) {
-		// TODO
-		 return -1;
+		return map.getOrDefault(author, 0);
 	}
 
+	/**
+	 * Helper class to represent a node in the BFS queue.
+	 */
+	public static class Node {
+		String name;
+		int distance;
+
+		Node(String name, int distance) {
+			this.name = name;
+			this.distance = distance;
+		}
+	}
 }

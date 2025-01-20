@@ -51,22 +51,19 @@ public class Evacuation {
         }
 
         while (!queue.isEmpty()){
-            int current_index = queue.poll();
-            System.out.println("current_index == " + current_index);
-            for (int voisin = 0; voisin < n; voisin++) {
-                if(graph[current_index][voisin] > 0){
-                    int cost = graph[current_index][voisin];
-                    if(distTo[voisin] > distTo[current_index] + cost){
-                        queue.add(voisin);
-                        edgeTo[voisin] = current_index;
-                        distTo[voisin] = distTo[current_index] + cost;
-
+            int current = queue.poll();
+            for (int neigh = 0; neigh < n; neigh++) {
+                if(graph[current][neigh]>0){
+                    int cost = graph[current][neigh];
+                    if(distTo[neigh] > distTo[current] + cost){
+                        distTo[neigh] = distTo[current] + cost;
+                        edgeTo[neigh] = current;
+                        queue.add(neigh);
                     }
-
-
                 }
 
             }
+
 
 
 

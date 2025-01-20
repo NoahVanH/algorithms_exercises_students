@@ -63,7 +63,7 @@ public class MineClimbing {
 
 
         distTo = new int[n*m];
-        PriorityQueue<Point> pq = new PriorityQueue<>(); // on stock quoi ? Integer ou strucure.dist et structure.index
+        PriorityQueue<Point> pq = new PriorityQueue<>();
 
         //edge case, start = end
         if(index_start == index_end){

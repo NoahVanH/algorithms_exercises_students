@@ -1,72 +1,118 @@
 package searching;
 
-/**
- * We are interested in the implementation of an LRU cache,
- * i.e. a (hash)-map of limited capacity where the addition of
- * a new entry might induce the suppression of the Least Recently Used (LRU)
- * entry if the maximum capacity is exceeded.
- *
- * Your LRU cache implements the same two methods as a MAP :
- * - put(key, elem) inserts the given element in the cache,
- *      this element becomes the most recently used element
- *      and if needed (the cache is full and the key not yet present),
- *      the least recently used element is removed.
- * - get(key) returns the entry with the given key from the cache,
- *      this element becomes the most recently used element
- *
- * These methods need to be implemented with an expected time complexity of O(1).
- * You are free to choose the type of data structure that you consider
- * to best support this cache. You can also use data-structures from Java.
- *
- * Hint for your implementation:
- *       Use a doubly linked list to store the elements from the least
- *       recently used (head) to the most recently used (tail).
- *       If needed the element to suppress is the head of the list.
- *
- *       Use java.util.HashMap with the <key,node> where node is a reference to the node
- *       in the doubly linked list.
- *
- *       Of course, at every put/get the list will need to be updated so that
- *       the "accessed node" is placed at the end of the list.
- *
- *       Feel free to use existing java classes.
- *
- *  Example of usage of an LRU cache with capacity of 3:
- *  // step 0:
- *  put(A,7)  // map{(A,7)}  A is the LRU
- *  // step 1:
- *  put(B,10) // map{(A,7),(B,10)}  A is the LRU
- *  // step 2:
- *  put(C,5)  // map{(A,7),(B,10),(C,5)}  A is the LRU
- *  // step 3:
- *  put(D,8)  // map{(B,10),(C,5),(D,8)}  A is suppressed, B is the LRU
- *  // step 4:
- *  get(B)    // C is the LRU
- *  // step 5
- *  put(E,9)  // map{(B,10),(D,8),(E,9)} D is the LRU
- *  // step 6
- *  put(D,3)  // map{(B,10),(D,3),(E,9)} B is the LRU
- *  // step 7
- *  get(B)    // map{(B,10),(D,3),(E,9)} E is the LRU
- *  // step 8
- *  put(A,2)  // map{(B,10),(D,3),(A,2)} D is the LRU
- *
- *  Feel free to use existing java classes from Java
- */
-public class LRUCache<K,V> {
+import java.util.HashMap;
 
-    private int capacity;
-
+public class LRUCache<K, V> {
+    private final int capacity;
+    private final HashMap<K, Node<K, V>> map;
+    private final DoublyLinkedList<K, V> list;
 
     public LRUCache(int capacity) {
         this.capacity = capacity;
+        this.map = new HashMap<>();
+        this.list = new DoublyLinkedList<>();
     }
 
     public V get(K key) {
-         return null;
+        if (!map.containsKey(key)) {
+            return null; // Clé absente
+        }
+
+        // Déplacer le nœud correspondant à la fin de la liste
+        Node<K, V> node = map.get(key);
+        list.moveToEnd(node);
+        return node.value;
     }
 
     public void put(K key, V value) {
+        if (map.containsKey(key)) {
+            // Met à jour la valeur et déplace le nœud à la fin de la liste
+            Node<K, V> node = map.get(key);
+            node.value = value;
+            list.moveToEnd(node);
+        } else {
+            // Si la capacité est atteinte, supprime le LRU
+            if (map.size() >= capacity) {
+                Node<K, V> lru = list.removeFirst();
+                if (lru != null) {
+                    map.remove(lru.key);
+                }
+            }
+
+            // Ajoute un nouveau nœud
+            Node<K, V> newNode = new Node<>(key, value);
+            list.addLast(newNode);
+            map.put(key, newNode);
+        }
     }
 
+    // Classe représentant un nœud dans la liste
+    private static class Node<K, V> {
+        K key;
+        V value;
+        Node<K, V> prev, next;
+
+        Node(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    // Liste doublement chaînée pour gérer l'ordre des éléments
+    private static class DoublyLinkedList<K, V> {
+        private Node<K, V> head, tail;
+
+        DoublyLinkedList() {
+            this.head = null;
+            this.tail = null;
+        }
+
+        void addLast(Node<K, V> node) {
+            if (tail == null) {
+                head = tail = node;
+            } else {
+                tail.next = node;
+                node.prev = tail;
+                tail = node;
+            }
+        }
+
+        void moveToEnd(Node<K, V> node) {
+            if (node == tail) return;
+
+            if (node == head) {
+                head = head.next;
+                if (head != null) {
+                    head.prev = null;
+                }
+            } else {
+                node.prev.next = node.next;
+                node.next.prev = node.prev;
+            }
+
+            node.prev = tail;
+            node.next = null;
+            if (tail != null) {
+                tail.next = node;
+            }
+            tail = node;
+
+            if (head == null) {
+                head = tail;
+            }
+        }
+
+        Node<K, V> removeFirst() {
+            if (head == null) return null;
+
+            Node<K, V> node = head;
+            head = head.next;
+            if (head != null) {
+                head.prev = null;
+            } else {
+                tail = null;
+            }
+            return node;
+        }
+    }
 }
