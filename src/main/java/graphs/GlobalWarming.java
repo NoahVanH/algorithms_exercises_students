@@ -1,6 +1,10 @@
 package graphs;
 
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+
 /**
  * In this exercise, we revisit the GlobalWarming
  * class from the sorting package.
@@ -43,7 +47,8 @@ package graphs;
  * Carefully read the expected time complexity of the different methods.
  */
 public class GlobalWarming {
-
+    public HashMap<Integer,Integer> map;
+    public HashSet<Point> set;
 
     /**
      * Constructor. The run time of this method is expected to be in 
@@ -53,6 +58,40 @@ public class GlobalWarming {
      * @param waterLevel the water level under which the entries are submerged
      */
     public GlobalWarming(int [][] altitude, int waterLevel) {
+        map = new HashMap<>();
+        set = new HashSet<>();
+        int n = altitude.length;
+        int m = altitude[0].length;
+        int[][] direction = {{0,1},{1,0},{0,-1},{-1,0}};
+        
+        for (int i = 0; i < altitude.length; i++) {
+            for (int j = 0; j < altitude[0].length; j++) {
+                int currentValue = altitude[i][j];
+                if(currentValue>waterLevel){
+                    set.add(new Point(i,j));
+//                    for (int[] pos:direction) {
+//                        int nextX = i+pos[0];
+//                        int nextY = j+pos[1];
+//                        if((nextX>-1 && nextY >-1) && (nextX<n && nextY<m)){
+//                            int voisinX = altitude[i+pos[0]][0];
+//                            int voisinY = altitude[j+pos[1]][1];
+//                        }
+//
+//
+//
+//
+//                    }
+                }
+
+            }
+
+        }
+
+        //Arrays.sort(altitude);
+    }
+    public void search(Point x){
+        boolean[] marked = new boolean[set.size()];
+        
     }
 
     /**

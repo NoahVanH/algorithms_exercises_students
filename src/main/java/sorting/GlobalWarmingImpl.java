@@ -1,5 +1,6 @@
 package sorting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -63,7 +64,28 @@ public class GlobalWarmingImpl extends GlobalWarming {
     public GlobalWarmingImpl(int[][] altitude) {
         super(altitude);
         // TODO
+        for (int[] a :altitude) {
+            Arrays.sort(a);
+
+        }
+
         // expected pre-processing time in the constructror : O(n^2 log(n^2))
+
+    }
+    public int binarySearch(int[] array,int l,int h,int waterlevel){
+        while(l<=h){
+            int mid = l + (h-l)/2;
+            int current = array[mid];
+            if(current == waterlevel){
+                return mid;
+            } else if (waterlevel > current) {
+                l = mid+1;
+
+            }else{
+                h = mid -1;
+            }
+        }
+        return l;
 
     }
 
@@ -75,7 +97,27 @@ public class GlobalWarmingImpl extends GlobalWarming {
     public int nbSafePoints(int waterLevel) {
         // TODO
         // expected time complexity O(log(n^2))
-         return -1;
+        int result = 0;
+        for (int[] a :altitude) {
+            int index = binarySearch(a,0,a.length-1,waterLevel);
+            if(index < 0 || index > a.length-1){
+                continue;
+            }
+            while(a[index]<=waterLevel&&index < a.length-1){
+                index++;
+
+            }
+            if(index == a.length-1 && a[index] <= waterLevel){
+                continue;
+            }
+
+
+            result += a.length - index;
+
+
+
+        }
+        return result;
     }
 
 

@@ -1,18 +1,16 @@
 package strings;
 
-
-
+import java.util.PriorityQueue;
 
 /**
- * This class is used to construct a Huffman trie from frequencies of letters (in unicode or ASCII).
+ * This class is used to construct a Huffman trie from frequencies of letters (in Unicode or ASCII).
  * As a reminder, in a Huffman trie nodes are weighted (see the `HuffmanNode` class) by
- * the frequencies of the character (if lead node) or the sum of the frequencies of its children
- * (if internal node).
+ * the frequencies of the character (if a leaf node) or the sum of the frequencies of its children
+ * (if an internal node).
  * For example, let us assume that we have the following letters with their associated frequencies:
  *  (t, 1), (m, 2), (z, 3), (a, 4), (g, 5)
  *
- *  The the following Huffman trie can be constructed
- *
+ *  The following Huffman trie can be constructed
  *
  *                      (_, 15)
  *                         |
@@ -22,19 +20,38 @@ package strings;
  *                                              |
  *                                     (t, 1)------(m, 2)
  *
- * In practice you are given an array of frequencies for each of the 256 ASCII code or 65536 unicode characters.
+ * In practice, you are given an array of frequencies for each of the 256 ASCII code or 65536 Unicode characters.
  * The goal is to construct the Huffman trie from this array of frequencies.
  */
 public class Huffman {
 
+    //private static final int R = 256; // Assuming ASCII characters
+
     /**
      * Constructs a Huffman trie for the frequencies of the characters given in arguments.
-     * The characters are implicitely defined by the `freq` array (ranging from 0 to freq.length -1)
+     * The characters are implicitly defined by the `freq` array (ranging from 0 to freq.length - 1)
      *
      * @param freq the frequencies of the characters, freq[i] = frequency of character i
      */
-    public static HuffmanNode buildTrie(int [] freq) {
-         return null;
+    public static HuffmanNode buildTrie(int[] freq) {
+        PriorityQueue<HuffmanNode> pq = new PriorityQueue<>();
+
+        for (int c = 0; c < freq.length; c++) {
+
+            pq.add(new HuffmanNode(c, freq[c], null, null));
+
+        }
+
+        while (pq.size() > 1) {
+            // Merge two smallest trees.
+            HuffmanNode x = pq.poll();
+            HuffmanNode y = pq.poll();
+
+            HuffmanNode parent = new HuffmanNode('\0', x.getFrequency() + y.getFrequency(), x, y);
+            pq.add(parent);
+        }
+
+        return pq.poll();
     }
 }
 
@@ -56,7 +73,6 @@ class HuffmanNode implements Comparable<HuffmanNode> {
         return this.left;
     }
 
-    @SuppressWarnings("unchecked")
     public void setLeft(HuffmanNode node) {
         this.left = node;
     }
@@ -65,7 +81,6 @@ class HuffmanNode implements Comparable<HuffmanNode> {
         return this.right;
     }
 
-    @SuppressWarnings("unchecked")
     public void setRight(HuffmanNode node) {
         this.right = node;
     }

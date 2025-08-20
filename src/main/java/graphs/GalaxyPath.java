@@ -50,7 +50,29 @@ public class GalaxyPath {
      */
     public static int findPath(int [][] graph, int source, Set<Integer> destinations) {
         // TODO Your algorithm should execute in O(n^2) where n is the number of galaxies (nodes)
-         return -2;
+        int n = graph.length;;
+        boolean [] visited = new boolean[n];
+        int [] dist = new int[n];
+        //int current = source;
+        Queue<Integer> open = new ArrayDeque<>();
+        open.add(source);
+        visited[source] = true;
+
+        while(!open.isEmpty()){
+            int current = open.poll();
+            if(destinations.contains(current)){
+                return dist[current];
+            }
+            for (int i = 0; i < n; i++) {
+                if(!visited[i] && dist[current] < graph[current][i]){
+                    open.add(i);
+                    visited[i] = true;
+                    dist[i] = dist[current] +1;
+                }
+
+            }
+        }
+         return -1;
     }
 }
 

@@ -7,7 +7,7 @@ package searching;
  */
 public class LinearProbingHashST<Key, Value> {
     private static final int INIT_CAPACITY = 4;
-    
+
     // Please do not add/remove variables/modify their visibility.
     protected int n;           // number of key-value pairs in the symbol table
     protected int m;           // size of linear probing table
@@ -91,7 +91,7 @@ public class LinearProbingHashST<Key, Value> {
 
     /**
      * TODO
-     * Inserts the specified key-value pair into the symbol table, overwriting the old 
+     * Inserts the specified key-value pair into the symbol table, overwriting the old
      * value with the new value if the symbol table already contains the specified key.
      * The load factor should never exceed 50% so make sure to resize correctly
      *
@@ -111,7 +111,7 @@ public class LinearProbingHashST<Key, Value> {
      * @throws IllegalArgumentException if {@code key} is {@code null}
      */
     public Value get(Key key) {
-         return null;
+        return null;
 
     }
 

@@ -165,8 +165,72 @@ public class MinPQLinked<Key> {
      * @throws NoSuchElementException if this priority queue is empty
      */
     public Key delMin() {
-        // TODO (unfold the comment on top of the file to read the instructions)
-         return null;
+        if (isEmpty()) throw new NoSuchElementException("Priority queue underflow");
+
+        Key min = root.value;
+        if(size() == 1){
+            root = null;
+        } else {
+            root.value = removeLastNodeInLastLayer();
+            sink(root);
+        }
+        return min;
+
+    }
+
+
+    private Key removeLastNodeInLastLayer() {
+        assert (root!= null && root.left != null);
+        Node current = root;
+        if (size() == 1) {
+            root = null;
+            return current.value;
+        }
+        current.size--;
+        boolean right = true;
+        while (current.left != null) {
+            boolean leftComplete = isPowerOfTwo(current.left.size+1);
+            if (!leftComplete || current.right == null) { // left incomplete or right = null
+                current = current.left;
+            } else { // left complete & current.right != null
+                boolean rightComplete = isPowerOfTwo(current.right.size+1);
+                if (!rightComplete) {
+                    current = current.right;
+                } else {
+                    // left and right are complete
+                    if (current.left.size > current.right.size) {
+                        current = current.left;
+                    } else {
+                        current = current.right;
+                    }
+                }
+            }
+            current.size--;
+        }
+        if (current.parent.left == current) {
+            current.parent.left = null;
+        } else {
+            current.parent.right = null;
+        }
+
+        return current.value;
+    }
+
+    // Maintains the heap invariant by sinking the node down
+    private void sink(Node n) {
+        while (n.left != null) {
+            Node smallerChild = n.left;
+            if (n.right != null && greater(n.left, n.right)) {
+                smallerChild = n.right;
+            }
+
+            if (!greater(n, smallerChild)) {
+                break;
+            }
+
+            exch(n, smallerChild);
+            n = smallerChild;
+        }
     }
 
 

@@ -1,6 +1,10 @@
 package sorting;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+
 /**
  * Author Pierre Schaus
  *
@@ -21,7 +25,7 @@ public class Union {
     public static class Interval implements Comparable<Union.Interval> {
 
         public final int min;
-        public final int max;
+        public int max;
 
         public Interval(int min, int max) {
             assert(min <= max);
@@ -51,13 +55,45 @@ public class Union {
      * Returns the union of the intervals given in parameters.
      * This is the minimal array of (sorted) intervals covering
      * exactly the same points than the intervals in parameter.
-     * 
+     *
      * @param intervals the intervals to unite.
      */
     public static Interval[] union(Interval[] intervals) {
         // TODO
-         return new Interval[]{};
+        // sort by starting point
+        Arrays.sort(intervals, Comparator.comparingInt(a -> a.min));
+        ArrayList<Interval> res = new ArrayList<>();
+        //Interval[] res = new Interval[10];
+        res.add(new Interval(intervals[0].min,intervals[0].max));
 
+
+        for (int i = 1; i < intervals.length; i++) {
+            Interval last = res.get(res.size()-1);
+            Interval current = intervals[i];
+            if(isOverlapping(last,current)){
+                last.max = Math.max(last.max, current.max);
+
+            }else{
+                res.add(new Interval(current.min, current.max));
+            }
+        }
+
+
+
+        int x=1;
+        Interval[] intervalRes = new Interval[res.size()];
+        for (int i = 0; i < res.size(); i++) {
+            intervalRes[i] = res.get(i);
+
+        }
+        return intervalRes;
+
+    }
+    public static boolean isOverlapping (Interval a, Interval b){
+        if(a.max >= b.min){
+            return true;
+        }
+        return false;
     }
 
 }

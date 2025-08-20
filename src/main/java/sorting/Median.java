@@ -106,7 +106,36 @@ public class Median {
      */
     public static int median(Vector vec, int lo, int hi) {
         // TODO
-         return -1;
+
+        int n = vec.size();
+
+        while (lo < hi){
+
+            int pivotIndex = partition(vec,lo,hi);
+
+            if(pivotIndex == n/2) return vec.get(pivotIndex);
+            else if (pivotIndex < n/2) { // on doit aller a droite donc on augmente de 1 lo
+                lo = pivotIndex+1;
+            } else{
+                hi = pivotIndex-1; // on doit aller a gauche donc on réduit de 1 hi
+            }
+        }
+        return vec.get(lo);
+
+
+    }
+    private static int partition(Vector vec,int lo, int hi){
+        int pivot = vec.get(lo);
+        int i = lo;
+
+        for (int j = lo +1 ; j <= hi ; j++) {
+            if(vec.get(j) < pivot){
+                i++;
+                vec.swap(i,j);
+            }
+        }
+        vec.swap(i,lo);
+        return i;
     }
 
 }

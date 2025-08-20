@@ -3,7 +3,7 @@ package sorting;
 /**
  * In this task, you must implement the `push` operation on a binary heap data structure.
  * As a reminder, a heap is a tree data structure such that the following invariant is respected
- *  
+ *
  *      For any node in the tree, the value associated with the node is higher (for a maxHeap) or lower
  *      (for a minHeap) than the value of its children.
  *
@@ -40,6 +40,22 @@ public class BinaryHeap {
      * @param value the added value
      */
     public void push(int value) {
+        if(size+1>=content.length){
+            increaseSize();
+        }
+        //placer a la fin
+        content[size+1] = value;
+        size++;
+
+        int i = size; //position de l'élément insté
+
+        while (i>1&&(content[i/2]>content[i])){
+            int parent = i/2;
+            int temp = content[i];
+            content[i] = content[parent];
+            content[parent] = temp;
+            i = i/2;
+        }
     }
 
     /**

@@ -45,6 +45,6 @@ public class MineClimbing {
      */
     public static int best_distance(int[][] map, int startX, int startY, int endX, int endY) {
         // TODO
-         return 0;
+        return 0;
     }
 }

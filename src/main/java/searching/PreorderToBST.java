@@ -3,7 +3,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PreorderToBST {
-    /* 
+    /*
+    * NODE - LEFT - RIGHT
     * We ask you to implement the reconstruction of a BST starting
     * from a sequence of keys corresponding to preorder traversal of the BST.
     *
@@ -56,7 +57,11 @@ public class PreorderToBST {
 
     public Node preorderRead(int [] preOrderInput, int i, int min, int max) {
         // !!!!!!! TODO !!!!!!!!
-         return new Node(null,null,preOrderInput[0]);
+        Node mytree = new Node(null,null,preOrderInput[0]);
+        for (int key:preOrderInput) {
+            put(mytree,key);
+        }
+         return mytree;
     }
 
     public int[] preorderWrite() {

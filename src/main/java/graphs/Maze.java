@@ -1,6 +1,10 @@
 package graphs;
 
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+
 /**
  * We are interested in solving a maze represented
  * by a matrix of integers 0-1 of size nxm.
@@ -25,8 +29,65 @@ package graphs;
  */
 public class Maze {
     public static Iterable<Integer> shortestPath(int[][] maze, int x1, int y1, int x2, int y2) {
+        if(maze[x1][y1] == 1 || maze[x2][y2] == 1)return new LinkedList<>();
+
+        final int[][] pos = new int[][]{{-1,0},{0,-1},{1,0},{0,1}};
+
+        LinkedList<Integer> queue = new LinkedList<>();
+        int sizeX = maze.length;
+        int sizeY = maze[0].length;
+        int nb_node = sizeX*sizeY;
+
+        boolean[] marked = new boolean[nb_node]; // retenir qui on a add
+        int[] edge_to = new int[nb_node]; // retenir le path
+
+        int start = ind(x1,y1,sizeX);
+        int end = ind(x2,y2,sizeY);
+        marked[start] = true;
+        queue.add(start);
+
+
+        while (!queue.isEmpty()){
+            int current = queue.remove();
+            int currX = row(current,sizeY);
+            int currY = col(current,sizeY);
+            for (int i = 0; i < 4; i++) {
+                int x = pos[i][0];
+                int y = pos[i][1];
+
+                int voisinX = currX + x;
+                int voisinY = currY + y;
+
+
+                if((0 <= voisinX && voisinX < sizeX) && (0 <= voisinY && voisinY < sizeY) && (maze[voisinX][voisinY] != 1)){
+                    int voisinId = ind(voisinX,voisinY,sizeY);
+                    if(!marked[voisinId]){
+                        marked[voisinId] = true;
+                        queue.add(voisinId);
+                        edge_to[voisinId] = current;
+
+                    }
+
+
+                }
+
+            }
+        }
+
+        LinkedList<Integer> list = new LinkedList<>();
+        if(!marked[end]) return list;
+        while(start!=end){
+            list.add(end);
+            end = edge_to[end];
+
+        }
+        list.add(end);
+
+
+        Collections.reverse(list);
+        System.out.println(list);
         // TODO
-         return null;
+        return list;
     }
 
     public static int ind(int x, int y, int lg) {

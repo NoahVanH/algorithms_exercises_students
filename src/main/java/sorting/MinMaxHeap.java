@@ -34,13 +34,13 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
 
     @SuppressWarnings("unchecked")
     public MinMaxHeap(int initialSize) {
-        this.content = (Key []) new Comparable[initialSize];
+        this.content = (Key[]) new Comparable[initialSize];
         this.size = 0;
     }
 
     @SuppressWarnings("unchecked")
     private void increaseSize() {
-        Key [] newContent = (Key []) new Comparable[this.content.length*2];
+        Key[] newContent = (Key[]) new Comparable[this.content.length * 2];
         System.arraycopy(this.content, 0, newContent, 0, this.content.length);
         this.content = newContent;
     }
@@ -57,8 +57,10 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      * Expected time complexity: O(1)
      */
     public Key min() {
-        // TODO STUDENT return null;
-        return null;
+        if (size() == 0) return null;
+        return content[1];
+
+
     }
 
     /**
@@ -67,7 +69,16 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      */
     public Key max() {
         // TODO STUDENT return null;
-        return null;
+        if (this.size() <= 1)
+            return this.min();
+        if (this.size() == 2)
+            return this.content[2];
+        Key k1 = this.content[2];
+        Key k2 = this.content[3];
+        if (higherThan(k1, k2)) {
+            return k1;
+        }
+        return k2;
     }
 
     /**
@@ -86,7 +97,7 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
     /**
      * Returns true if the first key is less than the second key
      *
-     * @param key The base key for comparison
+     * @param key        The base key for comparison
      * @param comparedTo The key compared to
      */
     private boolean lessThan(Key key, Key comparedTo) {
@@ -96,7 +107,7 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
     /**
      * Returns true if the first key is greater than the second key
      *
-     * @param key The base key for comparison
+     * @param key        The base key for comparison
      * @param comparedTo The key compared to
      */
     private boolean higherThan(Key key, Key comparedTo) {
@@ -121,7 +132,40 @@ public class MinMaxHeap<Key extends Comparable<Key>> {
      * @param position The position of the node to swim in the `content` array
      */
     public void swim(int position) {
+        // BEGIN STRIP
+        if (position == 1)
+            return;
+        Key node = this.content[position];
+        Key parent = this.content[position / 2];
+        boolean has_grandparent = position / 4 != 0 && position / 2 != position / 4;
+        Key grandParent = this.content[position / 4];
+        int depth = this.getNodeDepth(position);
+        boolean isMinLevel = depth % 2 == 0;
+        if (isMinLevel) {
+            // If the node is at a min level, we need to check that its value is
+            // below its parent (which is at a max level)
+            if (this.higherThan(node, parent)) {
+                this.swap(position, position / 2);
+                this.swim(position / 2);
+            } else if (has_grandparent && this.lessThan(node, grandParent)) {
+                this.swap(position, position / 4);
+                this.swim(position / 4);
+            }
+        } else {
+            // In the other case, the parent is at a min level so its children must be
+            // higher than it
+            if (this.lessThan(node, parent)) {
+                this.swap(position, position / 2);
+                this.swim(position / 2);
+            } else if (has_grandparent && this.higherThan(node, grandParent)) {
+                this.swap(position, position / 4);
+                this.swim(position / 4);
+            }
+        }
+        // END STRIP
     }
+
+
 
     /**
      * Inserts a new value in the heap

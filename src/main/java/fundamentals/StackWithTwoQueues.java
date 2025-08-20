@@ -16,8 +16,8 @@ public class StackWithTwoQueues<E> {
     Queue<E> queue2;
 
     public StackWithTwoQueues() {
-        queue1 = new ArrayDeque<>(); // la main
-        queue2 = new ArrayDeque<>(); // auxiliaire
+        queue1 = new ArrayDeque();
+        queue2 = new ArrayDeque();
     }
 
     /**
@@ -25,9 +25,7 @@ public class StackWithTwoQueues<E> {
      * without removing it from the stack
      */
     public boolean empty() {
-        // TO DO
         return queue1.isEmpty();
-
     }
 
     /**
@@ -37,7 +35,8 @@ public class StackWithTwoQueues<E> {
      */
     public E peek() throws EmptyStackException {
         if(queue1.isEmpty()) throw new EmptyStackException();
-         return queue1.peek();
+
+        return queue1.peek();
     }
 
     /**
@@ -46,33 +45,17 @@ public class StackWithTwoQueues<E> {
      * @throws EmptyStackException if the stack is empty
      */
     public E pop() throws EmptyStackException {
-        /*
-        * Stack :
-        *   pop - retire le premier
-        *   push - ajoute au dessus
-        *
-        * Queue :
-        *   pop - retire le dernier
-        *   push - ajoute au dessus
-        *
-        *  Stack
-        *
-        * */
-        // retirer dans 1 et mettre dans 2 et puis inverser 1 et 2
         if(queue1.isEmpty()) throw new EmptyStackException();
 
-        while (queue1.size() > 1){
+        while(queue1.size() > 1){
             queue2.add(queue1.remove());
         }
         E top = queue1.remove();
 
-        // Inverser les 2 queues
-        Queue<E> buff = queue1;
+        Queue<E> temp = queue1;
         queue1 = queue2;
-        queue2 = buff;
-
+        queue2 = temp;
         return top;
-
     }
 
     /**

@@ -3,6 +3,7 @@ package searching;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
 /**
  * In this exercise, we are interested in implementing an iterator (BSTIterator) for a Binary Search Tree (BST).
@@ -26,7 +27,7 @@ import java.util.NoSuchElementException;
  * BinaryNode and KeyNode interface available in the utils package.
  *
  * Hint: You have two strategies to implement this iterator Fail-Fast and Fail-Safe
- * https://www.geeksforgeeks.org/fail-fast-fail-safe-iterators-java/
+ * <a href="https://www.geeksforgeeks.org/fail-fast-fail-safe-iterators-java/">...</a>
  *
  * The Fail-Safe will collect all the keys in a collection and return an iterator on this collection.
  * The Fail-Fast will lazily return the elements and throw an exception if the BST is modified while iterating on it.
@@ -96,18 +97,42 @@ public class BinarySearchTreeIterator<Key extends Comparable<Key>> implements It
         return new BSTIterator();
     }
 
+
     private class BSTIterator implements Iterator<Key> {
+        private Stack<BSTNode<Key>> stack;
+        private int size;
+
+        public BSTIterator() {
+            stack = new Stack<>();
+            BSTNode<Key> current = root;
+            while (current != null) {
+                // copy BST in Stack
+                stack.push(current);
+                current = current.getLeft();
+            }
+            this.size = size();
+        }
 
         @Override
         public boolean hasNext() {
-            return false;
+            if(this.size != size()) throw new ConcurrentModificationException();
+            return !stack.isEmpty();
         }
 
         @Override
         public Key next() {
-            return null;
-        }
-    }
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            BSTNode<Key> current = stack.pop();
+            Key result = current.getKey();
+            current = current.getRight();
+            while (current != null) {
+                stack.push(current);
+                current = current.getLeft();
+            }
+            return result;
+        }}
 
     class BSTNode<K extends Comparable<K>> {
 

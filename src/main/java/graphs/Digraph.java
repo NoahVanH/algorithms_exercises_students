@@ -18,7 +18,7 @@ public class Digraph {
      */
     public int V() {
         // TODO
-         return -1;
+        return -1;
     }
 
     /**
@@ -26,7 +26,7 @@ public class Digraph {
      */
     public int E() {
         // TODO
-         return -1;
+        return -1;
     }
 
     /**
@@ -42,7 +42,7 @@ public class Digraph {
      */
     public Iterable<Integer> adj(int v) {
         // TODO
-         return null;
+        return null;
     }
 
     /**
@@ -50,7 +50,7 @@ public class Digraph {
      */
     public Digraph reverse() {
         // TODO
-         return null;
+        return null;
     }
 
 }

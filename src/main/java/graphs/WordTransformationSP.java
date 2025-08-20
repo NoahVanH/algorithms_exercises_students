@@ -49,7 +49,36 @@ public class WordTransformationSP {
      */
     public static int minimalCost(String from, String to) {
         // TODO
+        System.out.println(from);
+        System.out.println(to);
+        HashMap<String, Integer> distTo = new HashMap<>();
+        distTo.put(from, 0);
+
+        PriorityQueue<Rotation> queue = new PriorityQueue<>();
+        queue.add(new Rotation(from, 0));
+
+        while (!queue.isEmpty()){
+            Rotation next = queue.poll();
+            String val = next.value;
+
+        }
          return 0;
+    }
+
+    private static class Rotation implements Comparable<Rotation> {
+
+        String value;
+        int distance;
+
+        Rotation(String value, int distance) {
+            this.value = value;
+            this.distance = distance;
+        }
+
+        @Override
+        public int compareTo(Rotation o) {
+            return this.distance - o.distance;
+        }
     }
 
 

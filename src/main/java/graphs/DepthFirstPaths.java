@@ -1,6 +1,8 @@
 package graphs;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -50,6 +52,14 @@ public class DepthFirstPaths {
     // Depth first search from v
     private void dfs(Graph G, int v) {
         // TODO
+        marked[v] = true;
+        for (int w:G.adj(v)) {
+            if(!marked[w]){
+                edgeTo[w]=v;
+                dfs(G,w);
+            }
+
+        }
     }
 
     /**
@@ -60,7 +70,7 @@ public class DepthFirstPaths {
      */
     public boolean hasPathTo(int v) {
         // TODO
-         return false;
+         return marked[v];
     }
 
     /**
@@ -73,7 +83,20 @@ public class DepthFirstPaths {
      */
     public Iterable<Integer> pathTo(int v) {
         // TODO
-         return null;
+        if(!hasPathTo(v))return null;
+        LinkedList<Integer> path_list = new LinkedList<>();
+
+        int x = v;
+        while (x!=s){
+            path_list.add(x);
+            x = edgeTo[x];
+        }
+
+        path_list.add(s);
+        Collections.reverse(path_list);
+
+
+         return path_list;
     }
 
     static class Graph {
