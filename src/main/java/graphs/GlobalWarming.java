@@ -1,127 +1,73 @@
 package graphs;
+import java.util.*;
 
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-
-/**
- * In this exercise, we revisit the GlobalWarming
- * class from the sorting package.
- * You are still given a matrix of altitude in
- * parameter of the constructor, with a water level.
- * All the entries whose altitude is under, or equal to,
- * the water level are submerged while the other constitute small islands.
- *
- * For example let us assume that the water
- * level is 3 and the altitude matrix is the following
- *
- *      | 1 | 3 | 3 | 1 | 3 |
- *      | 4 | 2 | 2 | 4 | 5 |
- *      | 4 | 4 | 1 | 4 | 2 |
- *      | 1 | 4 | 2 | 3 | 6 |
- *      | 1 | 1 | 1 | 6 | 3 |
- * 
- * If we replace the submerged entries
- * by _, it gives the following matrix
- *
- *      | _ | _ | _ | _ | _ |
- *      | 4 | _ | _ | 4 | 5 |
- *      | 4 | 4 | _ | 4 | _ |
- *      | _ | 4 | _ | _ | 6 |
- *      | _ | _ | _ | 6 | _ |
- *
- * The goal is to implement two methods that
- * can answer the following questions:
- *      1) Are two entries on the same island?
- *      2) How many islands are there
- *
- * Two entries above the water level are
- * connected if they are next to each other on
- * the same row or the same column. They are
- * **not** connected **in diagonal**.
- * Beware that the methods must run in O(1)
- * time complexity, at the cost of a pre-processing in the constructor.
- * To help you, you'll find a `Point` class
- * in the utils package which identified an entry of the grid.
- * Carefully read the expected time complexity of the different methods.
- */
 public class GlobalWarming {
-    public HashMap<Integer,Integer> map;
-    public HashSet<Point> set;
+    private final Map<Point, Integer> map;
+    private final Set<Point> set;
+    private final int[][] altitude;
+    private int islandId;
 
-    /**
-     * Constructor. The run time of this method is expected to be in 
-     * O(n x log(n)) with n the number of entry in the altitude matrix.
-     *
-     * @param altitude the matrix of altitude
-     * @param waterLevel the water level under which the entries are submerged
-     */
-    public GlobalWarming(int [][] altitude, int waterLevel) {
-        map = new HashMap<>();
-        set = new HashSet<>();
-        int n = altitude.length;
-        int m = altitude[0].length;
-        int[][] direction = {{0,1},{1,0},{0,-1},{-1,0}};
-        
+    public GlobalWarming(int[][] altitude, int waterLevel) {
+        this.altitude = altitude;
+        this.map = new HashMap<>();
+        this.set = new HashSet<>();
+        this.islandId = 0;
+
+        // Ajouter tous les points non submergés à `set`
         for (int i = 0; i < altitude.length; i++) {
             for (int j = 0; j < altitude[0].length; j++) {
-                int currentValue = altitude[i][j];
-                if(currentValue>waterLevel){
-                    set.add(new Point(i,j));
-//                    for (int[] pos:direction) {
-//                        int nextX = i+pos[0];
-//                        int nextY = j+pos[1];
-//                        if((nextX>-1 && nextY >-1) && (nextX<n && nextY<m)){
-//                            int voisinX = altitude[i+pos[0]][0];
-//                            int voisinY = altitude[j+pos[1]][1];
-//                        }
-//
-//
-//
-//
-//                    }
+                if (altitude[i][j] > waterLevel) {
+                    set.add(new Point(i, j));
                 }
-
             }
-
         }
 
-        //Arrays.sort(altitude);
-    }
-    public void search(Point x){
-        boolean[] marked = new boolean[set.size()];
-        
+        // Trouver les îles
+        for (Point p : set) {
+            if (!map.containsKey(p)) {
+                search(p, islandId);
+                islandId++;
+            }
+        }
     }
 
-    /**
-     * Returns the number of island
-     *
-     * Expected time complexity O(1)
-     */
+    private void search(Point start, int islandId) {
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(start);
+        map.put(start, islandId);
+
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
+            for (int[] dir : directions) {
+                int nextX = current.x + dir[0];
+                int nextY = current.y + dir[1];
+                Point nextPoint = new Point(nextX, nextY);
+
+                // Vérifier les limites, si le point est non submergé et non marqué
+                if (nextX >= 0 && nextX < altitude.length &&
+                        nextY >= 0 && nextY < altitude[0].length &&
+                        set.contains(nextPoint) &&
+                        !map.containsKey(nextPoint)) {
+                    map.put(nextPoint, islandId);
+                    queue.add(nextPoint);
+                }
+            }
+        }
+    }
+
     public int nbIslands() {
-         return 0;
+        return islandId;
     }
 
-    /**
-     * Return true if p1 is on the same island as p2, false otherwise
-     *
-     * Expected time complexity: O(1)
-     *
-     * @param p1 the first point to compare
-     * @param p2 the second point to compare
-     */
     public boolean onSameIsland(Point p1, Point p2) {
-         return false;
+        if (!map.containsKey(p1) || !map.containsKey(p2)) {
+            return false;
+        }
+        return Objects.equals(map.get(p1), map.get(p2));
     }
 
-
-    /**
-     * This class represent a point in a 2-dimension discrete plane. This is used, for instance, to
-     * identified cells of a grid
-     */
     static class Point {
-
         private final int x;
         private final int y;
 
@@ -145,6 +91,11 @@ public class GlobalWarming {
                 return p.x == this.x && p.y == this.y;
             }
             return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(x, y);
         }
     }
 }
